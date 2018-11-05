@@ -2,6 +2,8 @@
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/spiwokv/metadynminer?branch=master&svg=true)](https://ci.appveyor.com/project/spiwokv/metadynminer)
 
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/metadynminer)](https://cran.r-project.org/package=metadynminer)
+
 # MetadynMiner
 
 ## Introduction
@@ -12,9 +14,9 @@ transition paths by Nudged Elastic Band method.
 ## Usage
 ```R
 # Install from R repository
-#install.packages("metadynminer") # in future will be added to R repository
+install.packages("metadynminer")
 
-# Before this you can install from GitHub by devtools
+# Install from GitHub by devtools
 install.packages("devtools")
 devtools::install_github("spiwokv/metadynminer")
 
