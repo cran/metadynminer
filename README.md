@@ -1,8 +1,9 @@
-[![Build Status](https://travis-ci.org/spiwokv/metadynminer.svg?branch=master)](https://travis-ci.org/spiwokv/metadynminer)
-
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/spiwokv/metadynminer?branch=master&svg=true)](https://ci.appveyor.com/project/spiwokv/metadynminer)
-
+[![Build Status](https://travis-ci.org/spiwokv/metadynminer.svg?branch=master)](https://travis-ci.org/spiwokv/metadynminer) 
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/spiwokv/metadynminer?branch=master&svg=true)](https://ci.appveyor.com/project/spiwokv/metadynminer) 
+[![CRAN status](https://www.r-pkg.org/badges/version/metadynminer)](https://cran.r-project.org/package=metadynminer) 
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/metadynminer)](https://cran.r-project.org/package=metadynminer)
+[![Rdoc](http://www.rdocumentation.org/badges/version/metadynminer)](http://www.rdocumentation.org/packages/metadynminer)
+[![codecov](https://codecov.io/gh/spiwokv/metadynminer/branch/master/graph/badge.svg)](https://codecov.io/gh/spiwokv/metadynminer/)
 
 # MetadynMiner
 
@@ -21,8 +22,7 @@ install.packages("devtools")
 devtools::install_github("spiwokv/metadynminer")
 
 # Load library
-library(metadynminer) # in future will be added to R repository
-
+library(metadynminer)
 # Read hills file
 hillsf<-read.hills("HILLS", per=c(TRUE, TRUE)) # HILLS with periodicity on CV1 and CV2
 
