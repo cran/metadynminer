@@ -37,21 +37,19 @@ read.hills<-function(file="HILLS", per=c(FALSE, FALSE), pcv1=c(-pi,pi), pcv2=c(-
                 size=dim(hillsf), filename=file, per=per, pcv1=pcv1)
     class(hills) <- "hillsfile"
     return(hills)
-  } else {
-    if(ncol(hillsf)==7 || ncol(hillsf)==8) {
-      cat("2D HILLS file read\n")
-      if(ignoretime) {
-        cat("Warning: The time will be updated automatically from zero\n")
-        cat("according to the first step!\n")
-        hillsf[,1]<-seq(from=hillsf[1,1], by=hillsf[1,1], length.out=nrow(hillsf))
-      }
-      hills<-list(hillsfile=hillsf, time=hillsf[,1], cv1=hillsf[,2], cv2=hillsf[,3],
-                  size=dim(hillsf), filename=file, per=per, pcv1=pcv1, pcv2=pcv2)
-      class(hills) <- "hillsfile"
-      return(hills)
-    } else {
-      stop("Error: Number of columns in HILLS file must be 5 or 6 (1D) or 7 or 8 (2D)")
+  } else if(ncol(hillsf)==7 || ncol(hillsf)==8) {
+    cat("2D HILLS file read\n")
+    if(ignoretime) {
+      cat("Warning: The time will be updated automatically from zero\n")
+      cat("according to the first step!\n")
+      hillsf[,1]<-seq(from=hillsf[1,1], by=hillsf[1,1], length.out=nrow(hillsf))
     }
+    hills<-list(hillsfile=hillsf, time=hillsf[,1], cv1=hillsf[,2], cv2=hillsf[,3],
+                size=dim(hillsf), filename=file, per=per, pcv1=pcv1, pcv2=pcv2)
+    class(hills) <- "hillsfile"
+    return(hills)
+  } else {
+    stop("Error: Number of columns in HILLS file must be 5 or 6 (1D) or 7 or 8 (2D)")
   }
 }
 
@@ -324,9 +322,37 @@ lines.hillsfile<-function(x, ignoretime=FALSE,
   }
 }
 
-#' Plot evolution of heights of hills in hillsfile object
+#' Plot evolution of heights of hills (generic function for 'metadynminer' and
+#' 'metadynminer3d')
 #'
 #' `plotheights` plots evolution of heights of hills. In well tempered metadynamics
+#' hill heights decrees with flooding of the free energy surface. Evolution of heights
+#' may be useful to evaluate convergence of the simulation.
+#'
+#' @param hills hillsfile object.
+#' @param ignoretime time in the first column of the HILLS file will be ignored.
+#' @param main an overall title for the plot: see 'title'.
+#' @param sub a sub title for the plot: see 'title'.
+#' @param xlab a title for the x axis: see 'title'.
+#' @param ylab a title for the y axis: see 'title'.
+#' @param asp the y/x aspect ratio, see 'plot.window'.
+#' @param col color code or name, see 'par'.
+#' @param lwd line width for drawing symbols see 'par'.
+#' @param xlim numeric vector of length 2, giving the x coordinates range.
+#' @param ylim numeric vector of length 2, giving the y coordinates range.
+#' @param axes a logical value indicating whether both axes should be drawn
+#'        on the plot.
+#'
+#' @export plotheights
+plotheights<-function(hills, ignoretime, xlab, ylab,
+                      xlim, ylim, main, sub,
+                      col, asp, lwd, axes) {
+  UseMethod("plotheights")
+}
+
+#' Plot evolution of heights of hills in hillsfile object
+#'
+#' `plotheights.hillsfile` plots evolution of heights of hills. In well tempered metadynamics
 #' hill heights decrees with flooding of the free energy surface. Evolution of heights
 #' may be useful to evaluate convergence of the simulation.
 #'
@@ -347,52 +373,49 @@ lines.hillsfile<-function(x, ignoretime=FALSE,
 #' @export
 #' @examples
 #' plotheights(acealanme)
-plotheights<-function(hills, ignoretime=FALSE,
+plotheights.hillsfile<-function(hills, ignoretime=FALSE,
                       xlab=NULL, ylab=NULL,
                       xlim=NULL, ylim=NULL,
                       main=NULL, sub=NULL,
                       col="black", asp=NULL, lwd=1, axes=TRUE) {
-  if(class(hills)=="hillsfile") {
-    if(is.null(xlab)) xlab="time"
-    if(is.null(ylab)) ylab="hill height"
-    if(hills$size[2]==5) {
-      if(ignoretime) {
-        plot(seq(from=hills$hillsfile[1,1],by=hills$hillsfile[1,1],length.out=nrow(hills$hillsfile)),
-             hills$hillsfile[,4], type="l",
-             xlab=xlab, ylab=ylab,
-             main=main, sub=sub,
-             col=col, lwd=lwd,
-             asp=asp, axes=axes)
-      } else {
-        plot(hills$hillsfile[,1], hills$hillsfile[,4], type="l",
-             xlab=xlab, ylab=ylab,
-             main=main, sub=sub,
-             col=col, lwd=lwd,
-             asp=asp, axes=axes)
-      }
+  if(is.null(xlab)) xlab="time"
+  if(is.null(ylab)) ylab="hill height"
+  if(hills$size[2]==5) {
+    if(ignoretime) {
+      plot(seq(from=hills$hillsfile[1,1],by=hills$hillsfile[1,1],length.out=nrow(hills$hillsfile)),
+           hills$hillsfile[,4], type="l",
+           xlab=xlab, ylab=ylab,
+           main=main, sub=sub,
+           col=col, lwd=lwd,
+           asp=asp, axes=axes)
+    } else {
+      plot(hills$hillsfile[,1], hills$hillsfile[,4], type="l",
+           xlab=xlab, ylab=ylab,
+           main=main, sub=sub,
+           col=col, lwd=lwd,
+           asp=asp, axes=axes)
     }
-    if(hills$size[2]==7) {
-      if(ignoretime) {
-        plot(seq(from=hills$hillsfile[1,1],by=hills$hillsfile[1,1],length.out=nrow(hills$hillsfile)),
-             hills$hillsfile[,6], type="l",
-             xlab=xlab, ylab=ylab,
-             main=main, sub=sub,
-             col=col, lwd=lwd,
-             asp=asp, axes=axes)
-      } else {
-        plot(hills$hillsfile[,1], hills$hillsfile[,6], type="l",
-             xlab=xlab, ylab=ylab,
-             main=main, sub=sub,
-             col=col, lwd=lwd,
-             asp=asp, axes=axes)
-      }
+  }
+  if(hills$size[2]==7) {
+    if(ignoretime) {
+      plot(seq(from=hills$hillsfile[1,1],by=hills$hillsfile[1,1],length.out=nrow(hills$hillsfile)),
+           hills$hillsfile[,6], type="l",
+           xlab=xlab, ylab=ylab,
+           main=main, sub=sub,
+           col=col, lwd=lwd,
+           asp=asp, axes=axes)
+    } else {
+      plot(hills$hillsfile[,1], hills$hillsfile[,6], type="l",
+           xlab=xlab, ylab=ylab,
+           main=main, sub=sub,
+           col=col, lwd=lwd,
+           asp=asp, axes=axes)
     }
-  } else {
-    stop("Error: Function plotheights requires object hillsfile as an input")
   }
 }
 
-#' Calculate free energy surface by Bias Sum algorithm
+#' Calculate free energy surface by Bias Sum algorithm (generic function for
+#' 'metadynminer' and 'metadynminer3d')
 #'
 #' `fes` sums up hills using fast Bias Sum algorithm.
 #'
@@ -401,13 +424,32 @@ plotheights<-function(hills, ignoretime=FALSE,
 #' @param imax index of a hill from which summation stops (default the rest of hills).
 #' @param xlim numeric vector of length 2, giving the CV1 coordinates range.
 #' @param ylim numeric vector of length 2, giving the CV2 coordinates range.
+#' @param zlim numeric vector of length 2, giving the CV3 coordinates range.
+#' @param npoints resolution of the free energy surface in number of points.
+#' @return fes object.
+#'
+#' @export fes
+fes<-function(hills, imin, imax, xlim, ylim, zlim, npoints) {
+  UseMethod("fes")
+}
+
+#' Calculate free energy surface by Bias Sum algorithm
+#'
+#' `fes.hillsfile` sums up hills using fast Bias Sum algorithm.
+#'
+#' @param hills hillsfile object.
+#' @param imin index of a hill from which summation starts (default 1).
+#' @param imax index of a hill from which summation stops (default the rest of hills).
+#' @param xlim numeric vector of length 2, giving the CV1 coordinates range.
+#' @param ylim numeric vector of length 2, giving the CV2 coordinates range.
+#' @param zlim numeric vector of length 2, giving the CV3 coordinates range.
 #' @param npoints resolution of the free energy surface in number of points.
 #' @return fes object.
 #'
 #' @export
 #' @examples
 #' tfes<-fes(acealanme, imax=5000)
-fes<-function(hills, imin=1, imax=NULL, xlim=NULL, ylim=NULL, npoints=256) {
+fes.hillsfile<-function(hills, imin=1, imax=NULL, xlim=NULL, ylim=NULL, zlim=NULL, npoints=256) {
   if(!is.null(imax)) {
     if(hills$size[1]<imax) {
       cat("Warning: You requested more hills by imax than available, using all hills\n")
@@ -512,7 +554,8 @@ fes<-function(hills, imin=1, imax=NULL, xlim=NULL, ylim=NULL, npoints=256) {
   return(cfes)
 }
 
-#' Calculate free energy surface by conventional algorithm
+#' Calculate free energy surface by conventional algorithm (generic function
+#' for 'metadynminer' and 'metadynminer3d')
 #'
 #' `fes2` sums up hills using slow conventional algorithm. It can be used
 #' as a reference or when hill widths are variable.
@@ -522,13 +565,33 @@ fes<-function(hills, imin=1, imax=NULL, xlim=NULL, ylim=NULL, npoints=256) {
 #' @param imax index of a hill from which summation stops (default the rest of hills).
 #' @param xlim numeric vector of length 2, giving the CV1 coordinates range.
 #' @param ylim numeric vector of length 2, giving the CV2 coordinates range.
+#' @param zlim numeric vector of length 2, giving the CV3 coordinates range.
+#' @param npoints resolution of the free energy surface in number of points.
+#' @return fes object.
+#'
+#' @export fes2
+fes2<-function(hills, imin, imax, xlim, ylim, zlim, npoints) {
+  UseMethod("fes2")
+}
+
+#' Calculate free energy surface by conventional algorithm
+#'
+#' `fes2.hillsfile` sums up hills using slow conventional algorithm. It can be used
+#' as a reference or when hill widths are variable.
+#'
+#' @param hills hillsfile object.
+#' @param imin index of a hill from which summation starts (default 1).
+#' @param imax index of a hill from which summation stops (default the rest of hills).
+#' @param xlim numeric vector of length 2, giving the CV1 coordinates range.
+#' @param ylim numeric vector of length 2, giving the CV2 coordinates range.
+#' @param zlim numeric vector of length 2, giving the CV3 coordinates range.
 #' @param npoints resolution of the free energy surface in number of points.
 #' @return fes object.
 #'
 #' @export
 #' @examples
 #' tfes<-fes2(acealanme, imax=1000)
-fes2<-function(hills, imin=1, imax=NULL, xlim=NULL, ylim=NULL, npoints=256) {
+fes2.hillsfile<-function(hills, imin=1, imax=NULL, xlim=NULL, ylim=NULL, zlim=NULL, npoints=256) {
   if(!is.null(imax)) {
     if(hills$size[1]<imax) {
       cat("Warning: You requested more hills by imax than available, using all hills\n")
@@ -555,31 +618,31 @@ fes2<-function(hills, imin=1, imax=NULL, xlim=NULL, ylim=NULL, npoints=256) {
     x<-0:(npoints-1)*(xlims[2]-xlims[1])/(npoints-1)+xlims[1]
     y<-0:(npoints-1)*(ylims[2]-ylims[1])/(npoints-1)+ylims[1]
     if((hills$per[1]==F)&(hills$per[2]==F)) {
-      fesm<-hills2(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
-                   npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
-                   npoints*hills$hillsfile[,4]/(xlims[2]-xlims[1]),
-                   npoints*hills$hillsfile[,5]/(ylims[2]-ylims[1]),
+      fesm<-hills2((npoints-1)*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
+                   (npoints-1)*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
+                   (npoints-1)*hills$hillsfile[,4]/(xlims[2]-xlims[1]),
+                   (npoints-1)*hills$hillsfile[,5]/(ylims[2]-ylims[1]),
                    hills$hillsfile[,6],npoints,imin-1,imax-1)
     }
     if((hills$per[1]==T)&(hills$per[2]==F)) {
-      fesm<-hills2p1(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
-                     npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
-                     npoints*hills$hillsfile[,4]/(xlims[2]-xlims[1]),
-                     npoints*hills$hillsfile[,5]/(ylims[2]-ylims[1]),
+      fesm<-hills2p1((npoints-1)*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
+                     (npoints-1)*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
+                     (npoints-1)*hills$hillsfile[,4]/(xlims[2]-xlims[1]),
+                     (npoints-1)*hills$hillsfile[,5]/(ylims[2]-ylims[1]),
                      hills$hillsfile[,6],npoints,imin-1,imax-1)
     }
     if((hills$per[1]==F)&(hills$per[2]==T)) {
-      fesm<-hills2p2(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
-                     npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
-                     npoints*hills$hillsfile[,4]/(xlims[2]-xlims[1]),
-                     npoints*hills$hillsfile[,5]/(ylims[2]-ylims[1]),
+      fesm<-hills2p2((npoints-1)*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
+                     (npoints-1)*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
+                     (npoints-1)*hills$hillsfile[,4]/(xlims[2]-xlims[1]),
+                     (npoints-1)*hills$hillsfile[,5]/(ylims[2]-ylims[1]),
                      hills$hillsfile[,6],npoints,imin-1,imax-1)
     }
     if((hills$per[1]==T)&(hills$per[2]==T)) {
-      fesm<-hills2p12(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
-                      npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
-                      npoints*hills$hillsfile[,4]/(xlims[2]-xlims[1]),
-                      npoints*hills$hillsfile[,5]/(ylims[2]-ylims[1]),
+      fesm<-hills2p12((npoints-1)*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
+                      (npoints-1)*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
+                      (npoints-1)*hills$hillsfile[,4]/(xlims[2]-xlims[1]),
+                      (npoints-1)*hills$hillsfile[,5]/(ylims[2]-ylims[1]),
                       hills$hillsfile[,6],npoints,imin-1,imax-1)
     }
     cfes<-list(fes=fesm, hills=hills$hillsfile, rows=npoints, dimension=2, per=hills$per, x=x, y=y, pcv1=hills$pcv1, pcv2=hills$pcv2)
@@ -593,17 +656,65 @@ fes2<-function(hills, imin=1, imax=NULL, xlim=NULL, ylim=NULL, npoints=256) {
     if((hills$per[1]==T)&is.null(xlim)) {xlims<-hills$pcv1}
     x<-0:(npoints-1)*(xlims[2]-xlims[1])/(npoints-1)+xlims[1]
     if(hills$per[1]==F) {
-      fesm<-hills1d2(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
-                     npoints*hills$hillsfile[,3]/(xlims[2]-xlims[1]),
+      fesm<-hills1d2((npoints-1)*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
+                     (npoints-1)*hills$hillsfile[,3]/(xlims[2]-xlims[1]),
                      hills$hillsfile[,4],npoints,imin-1,imax-1)
     }
     if(hills$per[1]==T) {
-      fesm<-hills1d2p(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
-                      npoints*hills$hillsfile[,3]/(xlims[2]-xlims[1]),
+      fesm<-hills1d2p((npoints-1)*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
+                      (npoints-1)*hills$hillsfile[,3]/(xlims[2]-xlims[1]),
                       hills$hillsfile[,4],npoints,imin-1,imax-1)
     }
     cfes<-list(fes=fesm, hills=hills$hillsfile, rows=npoints, dimension=1, per=hills$per, x=x, pcv1=hills$pcv1, pcv2=hills$pcv2)
     class(cfes) <- "fes"
+  }
+  return(cfes)
+}
+
+#' Read 1D or 2D free energy surface from PLUMED sum_hills
+#'
+#' `read.plumed` reads 1D or 2D free energy surface from PLUMED sum_hills.
+#' The grid in the (2D) inputfile must contain the same number of points
+#' for CV1 and CV2. It does not use the header of the file. Instead, user
+#' must specify the dimensionality (1 or 2). Periodicity must be specified
+#' as well.
+#'
+#' @param file input file from PLUMED sum_hills.
+#' @param dim dimension (1 or 2, default 2).
+#' @param per logical vector specifying periodicity of collective variables.
+#' @return fes object.
+#'
+#' @export
+#' @examples
+#' l1<-"-3.142 -124.8 -44.76"
+#' l2<-"-3.117 -125.9 -43.05"
+#' l3<-"-3.092 -126.9 -41.22"
+#' l4<-"-3.068 -127.9 -39.36"
+#' l5<-"-3.043 -128.8 -37.45"
+#' fourpoints<-c(l1,l2,l3,l4)
+#' tf <- tempfile()
+#' writeLines(fourpoints, tf)
+#' read.plumed(tf, dim=1, per=c(TRUE,TRUE))
+read.plumed<-function(file="fes.dat", dim=2, per=c(F,F,F)) {
+  hillsf<-read.table(file, header=F, comment.char="#")
+  bins<-round(nrow(hillsf)^(1/dim))
+  if(bins^dim!=nrow(hillsf)) {
+    stop("Error: the number of bins cannot be determined, it must be same for all dimension, or the number of dimensions is wrong.")
+  }
+  if(dim==1) {
+    x <- hillsf[,1]
+    fesm <- hillsf[,2]
+    cfes <- list(fes=fesm, hills=NULL, rows=bins, dimension=1, per=per, x=x, pcv1=c(min(x), max(x)))
+    class(cfes) <- "fes"
+  } else if(dim==2) {
+    x <- hillsf[1:bins,1]
+    y <- hillsf[(0:(bins-1))*bins+1,2]
+    fesm <- matrix(hillsf[,3], nrow=bins)
+    cfes <- list(fes=fesm, hills=NULL, rows=bins, dimension=2, per=per, x=x, y=y,
+                 pcv1=c(min(x), max(x)), pcv2=c(min(y), max(y)))
+    class(cfes) <- "fes"
+  } else {
+    stop("Error: for 3D fes use read.plumed3d from metadynminer3d, higher dimensions are not supported.")
   }
   return(cfes)
 }
@@ -661,32 +772,34 @@ fes2d21d<-function(hills, remdim=2, temp=300, eunit="kJ/mol",
     if((hills$per[2]==T)&is.null(ylim)) {ylims<-hills$pcv2}
     x<-0:(npoints-1)*(xlims[2]-xlims[1])/(npoints-1)+xlims[1]
     y<-0:(npoints-1)*(ylims[2]-ylims[1])/(npoints-1)+ylims[1]
+    binx<-(xlims[2]-xlims[1])/(npoints-1)
+    biny<-(ylims[2]-ylims[1])/(npoints-1)
     if((hills$per[1]==F)&(hills$per[2]==F)) {
-      fesm<-hills1(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
-                   npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
-                   npoints*max(hills$hillsfile[,4])/(xlims[2]-xlims[1]),
-                   npoints*max(hills$hillsfile[,5])/(ylims[2]-ylims[1]),
+      fesm<-hills1(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]+binx),
+                   npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]+biny),
+                   npoints*max(hills$hillsfile[,4])/(xlims[2]-xlims[1]+binx),
+                   npoints*max(hills$hillsfile[,5])/(ylims[2]-ylims[1]+biny),
                    hills$hillsfile[,6],npoints,imin-1,imax-1)
     }
     if((hills$per[1]==T)&(hills$per[2]==F)) {
-      fesm<-hills1p1(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
-                     npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
-                     npoints*max(hills$hillsfile[,4])/(xlims[2]-xlims[1]),
-                     npoints*max(hills$hillsfile[,5])/(ylims[2]-ylims[1]),
+      fesm<-hills1p1(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]+binx),
+                     npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]+biny),
+                     npoints*max(hills$hillsfile[,4])/(xlims[2]-xlims[1]+binx),
+                     npoints*max(hills$hillsfile[,5])/(ylims[2]-ylims[1]+biny),
                      hills$hillsfile[,6],npoints,imin-1,imax-1)
     }
     if((hills$per[1]==F)&(hills$per[2]==T)) {
-      fesm<-hills1p2(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
-                     npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
-                     npoints*max(hills$hillsfile[,4])/(xlims[2]-xlims[1]),
-                     npoints*max(hills$hillsfile[,5])/(ylims[2]-ylims[1]),
+      fesm<-hills1p2(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]+binx),
+                     npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]+biny),
+                     npoints*max(hills$hillsfile[,4])/(xlims[2]-xlims[1]+binx),
+                     npoints*max(hills$hillsfile[,5])/(ylims[2]-ylims[1]+biny),
                      hills$hillsfile[,6],npoints,imin-1,imax-1)
     }
     if((hills$per[1]==T)&(hills$per[2]==T)) {
-      fesm<-hills1p12(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]),
-                      npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]),
-                      npoints*max(hills$hillsfile[,4])/(xlims[2]-xlims[1]),
-                      npoints*max(hills$hillsfile[,5])/(ylims[2]-ylims[1]),
+      fesm<-hills1p12(npoints*(hills$hillsfile[,2]-xlims[1])/(xlims[2]-xlims[1]+binx),
+                      npoints*(hills$hillsfile[,3]-ylims[1])/(ylims[2]-ylims[1]+biny),
+                      npoints*max(hills$hillsfile[,4])/(xlims[2]-xlims[1]+binx),
+                      npoints*max(hills$hillsfile[,5])/(ylims[2]-ylims[1]+biny),
                       hills$hillsfile[,6],npoints,imin-1,imax-1)
     }
     if(eunit=="kJ/mol") {

@@ -2,10 +2,10 @@
 % Please edit documentation in R/readingandfes.R
 \name{fes2}
 \alias{fes2}
-\title{Calculate free energy surface by conventional algorithm}
+\title{Calculate free energy surface by conventional algorithm (generic function
+for 'metadynminer' and 'metadynminer3d')}
 \usage{
-fes2(hills, imin = 1, imax = NULL, xlim = NULL, ylim = NULL,
-  npoints = 256)
+fes2(hills, imin, imax, xlim, ylim, zlim, npoints)
 }
 \arguments{
 \item{hills}{hillsfile object.}
@@ -17,6 +17,8 @@ fes2(hills, imin = 1, imax = NULL, xlim = NULL, ylim = NULL,
 \item{xlim}{numeric vector of length 2, giving the CV1 coordinates range.}
 
 \item{ylim}{numeric vector of length 2, giving the CV2 coordinates range.}
+  
+\item{zlim}{numeric vector of length 2, giving the CV3 coordinates range.}
 
 \item{npoints}{resolution of the free energy surface in number of points.}
 }
@@ -26,7 +28,4 @@ fes object.
 \description{
 `fes2` sums up hills using slow conventional algorithm. It can be used
 as a reference or when hill widths are variable.
-}
-\examples{
-tfes<-fes2(acealanme, imax=1000)
 }
