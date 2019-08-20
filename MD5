@@ -1,10 +1,10 @@
-7b74d71aa982e03ec35e67f623e9eb9f *DESCRIPTION
-db8748705c6cd6bcd4863a744795e7d1 *NAMESPACE
+11f1142153ddc0e1191aeec839d77906 *DESCRIPTION
+44e375d91c4d005d1e3ac3c86df291c5 *NAMESPACE
 51473a63f6e959442598005f98ea483a *R/RcppExports.R
 49d96d26a58bcf0d54a390744330bf22 *R/data.R
-44a096c689604cd9313f37e56d3f7583 *R/minimaandpaths.R
-37aee4f372ed8a8c8cb891284221a735 *R/nebs.R
-1c338c31bddf530730d0ff3dd69fc4c5 *R/readingandfes.R
+aa84e6d16886ea11d2487b50c39c39c9 *R/minimaandpaths.R
+e06680553cbe0058eabf2bd0975d2730 *R/nebs.R
+fc36dc93042ef41dbb34efbf4f19de91 *R/readingandfes.R
 acb9a82c51e5989ceb46367f2ae6c462 *README.md
 13ab570e17bbf6f7f0ac9a28df8e6e32 *data/acealanme.RData
 24047779b6ace2c5bde46005a357b606 *data/acealanme1d.RData
@@ -46,6 +46,7 @@ e43464b7261f3a1b22104a82af044966 *man/print.fes.Rd
 68486f40a8f82cefb2de18557fd5d975 *man/print.minima.Rd
 7177819c3de27b34d9b34bd7b7e8e89c *man/print.nebpath.Rd
 3585187cdca2b825ecc864d672a2ee61 *man/print.profiles.Rd
+16368e66cde94ffc88ba8399acf95c98 *man/prob.Rd
 037d416d528b2e9aa7ca9ea28b9aa104 *man/read.hills.Rd
 6f5c299a1d42c022fd0cdce7722e5623 *man/read.plumed.Rd
 6b51282cc95f071d2315412c4148c6f6 *man/summary.fes.Rd
